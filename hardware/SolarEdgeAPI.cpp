@@ -94,8 +94,7 @@ void SolarEdgeAPI::Do_Work()
     while (!IsStopRequested(1000)) {
         time_t atime = mytime(NULL);
 
-        sec_counter++;
-        if (sec_counter % 12 == 0)
+        if (atime % 12 == 0)
             m_LastHeartbeat = mytime(NULL);
         if (atime % 300 == (300 - 15)) {
             if (m_SiteID == 0) {
@@ -108,7 +107,6 @@ void SolarEdgeAPI::Do_Work()
         }
     }
 
-    int sec_counter = 295;
 	_log.Log(LOG_STATUS, "SolarEdgeAPI Worker stopped...");
 }
 
