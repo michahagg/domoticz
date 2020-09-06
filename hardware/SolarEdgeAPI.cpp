@@ -90,25 +90,25 @@ bool SolarEdgeAPI::StopHardware()
 void SolarEdgeAPI::Do_Work()
 {
 	_log.Log(LOG_STATUS, "SolarEdgeAPI Worker started...");
-	int sec_counter = 295;
-	while (!IsStopRequested(1000))
-	{
-		sec_counter++;
-		if (sec_counter % 12 == 0) {
-			m_LastHeartbeat = mytime(NULL);
-		}
-		if (sec_counter % 300 == 0)
-		{
-			if (m_SiteID == 0)
-			{
-				if (!GetSite())
-					continue;
-				GetInverters();
-			}
-			if (!m_inverters.empty())
-				GetMeterDetails();
-		}
-	}
+
+    while (!IsStopRequested(1000)) {
+        time_t atime = mytime(NULL);
+
+        sec_counter++;
+        if (sec_counter % 12 == 0)
+            m_LastHeartbeat = mytime(NULL);
+        if (atime % 300 == (300 - 15)) {
+            if (m_SiteID == 0) {
+                if (!GetSite())
+                    continue;
+                GetInverters();
+            }
+            if (!m_inverters.empty())
+                GetMeterDetails();
+        }
+    }
+
+    int sec_counter = 295;
 	_log.Log(LOG_STATUS, "SolarEdgeAPI Worker stopped...");
 }
 
@@ -287,11 +287,11 @@ void SolarEdgeAPI::GetInverterDetails(const _tInverterSettings* pInverterSetting
 	if (ActHourMin - 60 > sunSet)
 		return;
 
-	struct tm ltime_min10;
-	time_t atime_min10;
-	constructTime(atime_min10, ltime_min10, ltime.tm_year + 1900, ltime.tm_mon + 1, ltime.tm_mday, ltime.tm_hour, ltime.tm_min - 10, ltime.tm_sec, ltime.tm_isdst);
+	struct tm ltime_min5;
+	time_t atime_min5;
+	constructTime(atime_min5, ltime_min5, ltime.tm_year + 1900, ltime.tm_mon + 1, ltime.tm_mday, ltime.tm_hour, ltime.tm_min - 5, ltime.tm_sec, ltime.tm_isdst);
 
-	sprintf(szTmp, "%04d-%02d-%02d %02d:%02d:%02d", ltime_min10.tm_year + 1900, ltime_min10.tm_mon + 1, ltime_min10.tm_mday, ltime_min10.tm_hour, ltime_min10.tm_min, ltime_min10.tm_sec);
+	sprintf(szTmp, "%04d-%02d-%02d %02d:%02d:%02d", ltime_min5.tm_year + 1900, ltime_min5.tm_mon + 1, ltime_min5.tm_mday, ltime_min5.tm_hour, ltime_min5.tm_min, ltime_min5.tm_sec);
 	std::string startDate = CURLEncode::URLEncode(szTmp);
 
 	sprintf(szTmp, "%04d-%02d-%02d %02d:%02d:%02d", ltime.tm_year + 1900, ltime.tm_mon + 1, ltime.tm_mday, ltime.tm_hour, ltime.tm_min, ltime.tm_sec);
